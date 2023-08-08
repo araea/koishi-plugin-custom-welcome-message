@@ -2,7 +2,6 @@ import { Context, Schema, h } from 'koishi'
 // 导入fs模块，用于读取文件
 import fs from 'fs';
 import path from 'path';
-import { Session } from 'inspector';
 
 export const name = 'custom-welcome-message'
 export const usage = `## 🎮 使用
@@ -30,7 +29,7 @@ export const usage = `## 🎮 使用
 - \`《被欢迎者头像》\`：被欢迎者的头像。
 - \`《当前群组ID》\`：当前群组的 ID。
 - \`《当前群组名字》\`：当前群组的名字。
-- \`\\n\`：换号符。
+- \`《换行》\`：换号符。
 
 
 ## 🎨 图片
@@ -44,6 +43,7 @@ export const usage = `## 🎮 使用
 
 - \`《图片url为https://i.imgur.com/abc.jpg》\`
 - \`《本地图片路径为C:\\Users\\114514\\Pictures\\Nawyjx.jpg》\`
+- \`《本地图片路径为home\\akisa\\koishi\\data\\suchat\\image\\1.jpeg》\`
 
 请注意，图片 URL 必须以 http:// 或 https:// 开头，并且必须是有效的图片地址。否则，将无法发送图片。
 
@@ -221,8 +221,11 @@ function registerEventEmitter(ctx: Context) {
       lastIndex = regex.lastIndex;
     }
 
-    // 使用replace方法，传入正则表达式和替换字符串，将\n替换为<br>
-    newMsg = newMsg.replace(/\\n/g, `\n`);
+    // 定义一个正则表达式，匹配'《换行》'
+    let regexWrap = /《换行》/g;
+
+    // 使用replace方法，将匹配到的'《换行》'替换成'\n'
+    newMsg = newMsg.replace(regexWrap, `\n`);
     newMsg = replaceImage(newMsg)
     newMsg = replaceImagePath(newMsg)
     await session.send(newMsg)
@@ -282,20 +285,16 @@ function replaceImagePath(str) {
 
   return str.replace(regex, (match, p1) => {
     let imagePath = p1;
-    
-    if (imagePath.includes('\\n')) {
-      return match; 
-    }
-    
+
     imagePath = path.resolve(imagePath);
     imagePath = path.normalize(imagePath);
 
     if (!fs.existsSync(imagePath)) {
       return match;
     }
-    
+
     // 读取文件内容生成缓冲区
-    const buffer = fs.readFileSync(imagePath); 
+    const buffer = fs.readFileSync(imagePath);
 
     return `${h.image(buffer, 'image/png')}`;
   });

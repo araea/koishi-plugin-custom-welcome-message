@@ -1,7 +1,7 @@
 {
   "name": "koishi-plugin-custom-welcome-message",
   "description": "用于在群组中发送自定义的欢迎消息。您可以为不同的群组设置不同的欢迎消息，并使用一些变量来替换成员或群组的信息。",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "main": "lib/index.js",
   "typings": "lib/index.d.ts",
   "files": [
