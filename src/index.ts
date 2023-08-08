@@ -2,6 +2,7 @@ import { Context, Schema, h } from 'koishi'
 // 导入fs模块，用于读取文件
 import fs from 'fs';
 import path from 'path';
+import { Session } from 'inspector';
 
 export const name = 'custom-welcome-message'
 export const usage = `## 🎮 使用
@@ -171,11 +172,17 @@ function registerAllKoishiCommands(ctx: Context) {
       await ctx.model.remove(Custom_Welcome_TABLE_ID, { guildId: guildId })
       await session.send(msg.cleared)
     })
+  // test
+  ctx.command('cwm.test', '测试')
+    .action(async ({ session }) => {
+      session.app.emit('guild-member-added', session as any)
+    })
 }
 
 function registerEventEmitter(ctx: Context) {
   // 核心
   // ctx.on('message', async (session) => {
+
   ctx.on('guild-member-added', async (session) => {
     // 定义一个正则表达式，匹配所有需要替换的内容
     let regex = /《艾特被欢迎者》|《被欢迎者ID》|《被欢迎者名字》|《被欢迎者头像》|《当前群组ID》|《当前群组名字》/g;
@@ -270,28 +277,23 @@ function replaceImage(str: string): string {
   return result;
 }
 
-function replaceImagePath(str: string) {
-  // 使用path.sep来获取当前系统的路径分隔符
-  const regex = new RegExp(`《本地图片路径为(.*?)》`, 'g');
+function replaceImagePath(str) {
+  const sep = process.platform === 'win32' ? '\\' : '/';
+  const escapedSep = sep.replace(/\\/g, '\\\\');
+  const regex = /《本地图片路径为([^》]*?)》/g;
 
-  let result = str.replace(regex, (match, imagePath) => {
+  return str.replace(regex, (match, p1) => {
+    let imagePath = p1;
 
-    // 对图片路径进行编码
-    imagePath = encodeURI(imagePath);
-
-    // 检查路径是否存在
-    if (!fs.existsSync(imagePath)) {
-      return match;
+    if (process.platform === 'win32') {
+      imagePath = imagePath.replace(new RegExp(escapedSep, 'g'), '/');
     }
 
-    // 检查路径是否为绝对路径
-    if (!path.isAbsolute(imagePath)) {
+    if (!fs.existsSync(imagePath)) {
       return match;
     }
 
     const buffer = fs.readFileSync(imagePath);
     return `${h.image(buffer, 'image/png')}`;
   });
-
-  return result;
 }
