@@ -60,8 +60,8 @@
 例如：
 
 - `《图片url为https://i.imgur.com/abc.jpg》`
-- `《本地图片路径为C:\Users\114514\Pictures\Nawyjx.jpg》`
-- `《本地图片路径为home\akisa\koishi\data\suchat\image\1.jpeg》`
+- `《本地图片路径为C:\Users\114514\Pictures\Nawyjx.jpg》`(Windows)
+- `《本地图片路径为home\akisa\koishi\data\suchat\image\1.jpeg》`(Linux)
 
 请注意，图片 URL 必须以 http:// 或 https:// 开头，并且必须是有效的图片地址。否则，将无法发送图片。
 
@@ -71,7 +71,7 @@
 
 - `欢迎 《艾特被欢迎者》 加入 《当前群组名字》！`
 - `《被欢迎者名字》 您好，感谢您加入 《当前群组名字》！`
-- `《图片url为https://i.imgur.com/xyz.png》《换行》Hi, 《被欢迎者名字》！Welcome to 《当前群组名字》！`
+- `《被欢迎者头像》《换行》Hi, 《被欢迎者名字》！《换行》Welcome to 《当前群组名字》！`
 
 ### 🙏 致谢
 

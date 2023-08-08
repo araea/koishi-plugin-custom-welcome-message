@@ -53,7 +53,7 @@ export const usage = `## 🎮 使用
 
 - \`欢迎 《艾特被欢迎者》 加入 《当前群组名字》！\`
 - \`《被欢迎者名字》 您好，感谢您加入 《当前群组名字》！\`
-- \`《图片url为https://i.imgur.com/xyz.png》\\nHi, 《被欢迎者名字》！Welcome to 《当前群组名字》！\``
+- \`《被欢迎者头像》《换行》Hi, 《被欢迎者名字》！《换行》Welcome to 《当前群组名字》！\``
 
 export interface Config { }
 
