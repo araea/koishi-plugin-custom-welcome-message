@@ -278,22 +278,26 @@ function replaceImage(str: string): string {
 }
 
 function replaceImagePath(str) {
-  const sep = process.platform === 'win32' ? '\\' : '/';
-  const escapedSep = sep.replace(/\\/g, '\\\\');
   const regex = /《本地图片路径为([^》]*?)》/g;
 
   return str.replace(regex, (match, p1) => {
     let imagePath = p1;
-
-    if (process.platform === 'win32') {
-      imagePath = imagePath.replace(new RegExp(escapedSep, 'g'), '/');
+    
+    if (imagePath.includes('\\n')) {
+      return match; 
     }
+    
+    imagePath = path.resolve(imagePath);
+    imagePath = path.normalize(imagePath);
 
     if (!fs.existsSync(imagePath)) {
       return match;
     }
+    
+    // 读取文件内容生成缓冲区
+    const buffer = fs.readFileSync(imagePath); 
 
-    const buffer = fs.readFileSync(imagePath);
     return `${h.image(buffer, 'image/png')}`;
   });
 }
+
