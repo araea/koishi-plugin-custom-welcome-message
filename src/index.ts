@@ -175,8 +175,8 @@ function registerAllKoishiCommands(ctx: Context) {
 
 function registerEventEmitter(ctx: Context) {
   // 核心
-  ctx.on('message', async (session) => {
-    // ctx.on('guild-member-added', async (session) => {
+  // ctx.on('message', async (session) => {
+  ctx.on('guild-member-added', async (session) => {
     // 定义一个正则表达式，匹配所有需要替换的内容
     let regex = /《艾特被欢迎者》|《被欢迎者ID》|《被欢迎者名字》|《被欢迎者头像》|《当前群组ID》|《当前群组名字》/g;
     // 根据群组 ID 获取数据表内容
@@ -249,7 +249,7 @@ async function replacer(session: any, match: string) {
     case '《当前群组ID》':
       return await session.guildId; // 使用 await 关键字
     case '《当前群组名字》':
-      return await session.guildName;
+      return (await session.bot.getGuild(session.guildId)).guildName;
     default:
       return match;
   }
@@ -271,9 +271,13 @@ function replaceImage(str: string): string {
 }
 
 function replaceImagePath(str: string) {
-  const regex = /《本地图片路径为(.*?)》/g;
+  // 使用path.sep来获取当前系统的路径分隔符
+  const regex = new RegExp(`《本地图片路径为(.*?)》`, 'g');
 
   let result = str.replace(regex, (match, imagePath) => {
+
+    // 对图片路径进行编码
+    imagePath = encodeURI(imagePath);
 
     // 检查路径是否存在
     if (!fs.existsSync(imagePath)) {
