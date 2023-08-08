@@ -34,7 +34,7 @@
 这个插件提供了以下几个指令：
 
 - `cwm`：查看 customWelcomeMessage 帮助。
-- `cwm.add <guildId:string> <message:text>`：添加欢迎消息。
+- `cwm.add <guildId:string> <message:text>`：添加欢迎消息。支持多个 guildId 的输入，只要用逗号隔开就行了。
 - `cwm.view <guildId:string>`：查看欢迎消息。
 - `cwm.clear <guildId:string>`：一键清理欢迎消息。
 
@@ -45,19 +45,22 @@
 - `《艾特被欢迎者》`：被欢迎者的艾特。
 - `《被欢迎者ID》`：被欢迎者的 ID。
 - `《被欢迎者名字》`：被欢迎者的名字。
+- `《被欢迎者头像》`：被欢迎者的头像。
 - `《当前群组ID》`：当前群组的 ID。
 - `《当前群组名字》`：当前群组的名字。
 - `\n`：换行符。
 
 ## 🎨 图片
 
-您还可以在欢迎消息中使用图片 URL 来发送图片，格式如下：
+您还可以在欢迎消息中使用图片 URL 或本地图片路径来发送图片，格式如下：
 
 - `《图片url为http://或https://...(此处已经省略url链接地址)》`
+- `《本地图片路径为(.*?)》`
 
 例如：
 
 - `《图片url为https://i.imgur.com/abc.jpg》`
+- `《本地图片路径为C:\Users\114514\Pictures\Nawyjx.jpg》`
 
 请注意，图片 URL 必须以 http:// 或 https:// 开头，并且必须是有效的图片地址。否则，将无法发送图片。
 

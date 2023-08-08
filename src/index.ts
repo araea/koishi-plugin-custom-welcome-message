@@ -1,4 +1,7 @@
 import { Context, Schema, h } from 'koishi'
+// 导入fs模块，用于读取文件
+import fs from 'fs';
+import path from 'path';
 
 export const name = 'custom-welcome-message'
 export const usage = `## 🎮 使用
@@ -12,7 +15,7 @@ export const usage = `## 🎮 使用
 这个插件提供了以下几个指令：
 
 - \`cwm\`：查看 customWelcomeMessage 帮助。
-- \`cwm.add <guildId:string> <message:text>\`：添加欢迎消息。
+- \`cwm.add <guildId:string> <message:text>\`：添加欢迎消息。支持多个 guildId 的输入，只要用逗号隔开就行了。
 - \`cwm.view <guildId:string>\`：查看欢迎消息。
 - \`cwm.clear <guildId:string>\`：一键清理欢迎消息。
 
@@ -23,6 +26,7 @@ export const usage = `## 🎮 使用
 - \`《艾特被欢迎者》\`：被欢迎者的艾特。
 - \`《被欢迎者ID》\`：被欢迎者的 ID。
 - \`《被欢迎者名字》\`：被欢迎者的名字。
+- \`《被欢迎者头像》\`：被欢迎者的头像。
 - \`《当前群组ID》\`：当前群组的 ID。
 - \`《当前群组名字》\`：当前群组的名字。
 - \`\\n\`：换号符。
@@ -30,13 +34,15 @@ export const usage = `## 🎮 使用
 
 ## 🎨 图片
 
-您还可以在欢迎消息中使用图片 URL 来发送图片，格式如下：
+您还可以在欢迎消息中使用图片 URL 或本地图片路径来发送图片，格式如下：
 
 - \`《图片url为http://或https://...(此处已经省略url链接地址)》\`
+- \`《本地图片路径为(.*?)》\`
 
 例如：
 
 - \`《图片url为https://i.imgur.com/abc.jpg》\`
+- \`《本地图片路径为C:\\Users\\114514\\Pictures\\Nawyjx.jpg》\`
 
 请注意，图片 URL 必须以 http:// 或 https:// 开头，并且必须是有效的图片地址。否则，将无法发送图片。
 
@@ -111,7 +117,17 @@ function registerAllKoishiCommands(ctx: Context) {
       if (!guildId || !message) {
         return
       }
-      await ctx.model.create(Custom_Welcome_TABLE_ID, { guildId: guildId, message: message })
+      // 用逗号分隔 guildId 字符串，并修剪所有空白
+      let guildIds = guildId.split(/,\s*/);
+      // 在 guildId 数组中循环
+      for (let id of guildIds) {
+        // 添加一个判断条件，如果 id 不是一个有效的数字，就跳过这个循环
+        if (isNaN(Number(id))) {
+          continue
+        }
+        // 为每个 guildId 创建一个记录
+        await ctx.model.create(Custom_Welcome_TABLE_ID, { guildId: id, message: message })
+      }
       await session.send(msg.added)
     })
   // view
@@ -159,10 +175,10 @@ function registerAllKoishiCommands(ctx: Context) {
 
 function registerEventEmitter(ctx: Context) {
   // 核心
-  // ctx.on('message', async (session) => {
-  ctx.on('guild-member-added', async (session) => {
+  ctx.on('message', async (session) => {
+    // ctx.on('guild-member-added', async (session) => {
     // 定义一个正则表达式，匹配所有需要替换的内容
-    let regex = /《艾特被欢迎者》|《被欢迎者ID》|《被欢迎者名字》|《当前群组ID》|《当前群组名字》/g;
+    let regex = /《艾特被欢迎者》|《被欢迎者ID》|《被欢迎者名字》|《被欢迎者头像》|《当前群组ID》|《当前群组名字》/g;
     // 根据群组 ID 获取数据表内容
     const result = await getTableContentByGuildId(ctx, session.guildId)
 
@@ -176,11 +192,33 @@ function registerEventEmitter(ctx: Context) {
     // 假设msg是一个数组
     let msg = result[Math.floor(Math.random() * result.length)].message;
 
-    // 使用replace方法，传入正则表达式和替换函数，得到新的字符串
-    let newMsg = msg.replace(regex, (match) => replacer(session, match));
+    let newMsg = '';
+    let lastIndex = 0;
+
+    // 使用循环找出所有的匹配项
+    while (true) {
+      const match = regex.exec(msg);
+      if (!match) {
+        // 没找到匹配项,添加剩余部分并退出循环
+        newMsg += msg.slice(lastIndex);
+        break;
+      }
+
+      // 添加前面未匹配的部分
+      newMsg += msg.slice(lastIndex, match.index);
+
+      // 调用替换函数处理匹配项
+      newMsg += await replacer(session, match[0]);
+
+      // 更新最后处理的位置
+      lastIndex = regex.lastIndex;
+    }
+
     // 使用replace方法，传入正则表达式和替换字符串，将\n替换为<br>
     newMsg = newMsg.replace(/\\n/g, `\n`);
-    await session.send(replaceImage(newMsg))
+    newMsg = replaceImage(newMsg)
+    newMsg = replaceImagePath(newMsg)
+    await session.send(newMsg)
   })
 }
 
@@ -197,19 +235,21 @@ async function getTableContentByGuildId(ctx: Context, guildId: string) {
   return await ctx.model.get(Custom_Welcome_TABLE_ID, { guildId: guildId })
 }
 
-// 定义一个替换函数，根据匹配的内容返回不同的变量
-function replacer(session: any, match: string) {
+// 定义一个异步函数，根据匹配的内容返回不同的变量
+async function replacer(session: any, match: string) {
   switch (match) {
     case '《艾特被欢迎者》':
-      return h.at(session.userId);
+      return h.at(await session.userId);
     case '《被欢迎者ID》':
-      return session.userId;
+      return await session.userId;
     case '《被欢迎者名字》':
-      return session.username;
+      return await session.username;
+    case '《被欢迎者头像》':
+      return h.image(await session.author.avatar);
     case '《当前群组ID》':
-      return session.guildId;
+      return await session.guildId; // 使用 await 关键字
     case '《当前群组名字》':
-      return session.guildName;
+      return await session.guildName;
     default:
       return match;
   }
@@ -227,5 +267,27 @@ function replaceImage(str: string): string {
     return `${h.image(`${url}`)}`;
   });
   // 返回替换后的字符串
+  return result;
+}
+
+function replaceImagePath(str: string) {
+  const regex = /《本地图片路径为(.*?)》/g;
+
+  let result = str.replace(regex, (match, imagePath) => {
+
+    // 检查路径是否存在
+    if (!fs.existsSync(imagePath)) {
+      return match; 
+    }
+    
+    // 检查路径是否为绝对路径
+    if (!path.isAbsolute(imagePath)) {
+      return match;
+    }
+
+    const buffer = fs.readFileSync(imagePath);
+    return `${h.image(buffer, 'image/png')}`; 
+  });
+
   return result;
 }
