@@ -15,7 +15,7 @@ export const usage = `## 🎮 使用
 这个插件提供了以下几个指令：
 
 - \`cwm\`：查看 customWelcomeMessage 帮助。
-- \`cwm.add <guildId:string> <message:text>\`：添加欢迎消息。支持多个 guildId 的输入，只要用逗号隔开就行了。
+- \`cwm.add <guildId:string> <message:text>\`：添加欢迎消息。支持多个 guildId 的输入，只要用逗号(中/英文逗号都支持)隔开就行了。
 - \`cwm.view <guildId:string>\`：查看欢迎消息。
 - \`cwm.clear <guildId:string>\`：一键清理欢迎消息。
 
@@ -117,8 +117,8 @@ function registerAllKoishiCommands(ctx: Context) {
       if (!guildId || !message) {
         return
       }
-      // 用逗号分隔 guildId 字符串，并修剪所有空白
-      let guildIds = guildId.split(/,\s*/);
+      // 用英文逗号或中文逗号分隔 guildId 字符串，并修剪所有空白
+      let guildIds = guildId.split(/[,，]\s*/);
       // 在 guildId 数组中循环
       for (let id of guildIds) {
         // 添加一个判断条件，如果 id 不是一个有效的数字，就跳过这个循环
@@ -277,16 +277,16 @@ function replaceImagePath(str: string) {
 
     // 检查路径是否存在
     if (!fs.existsSync(imagePath)) {
-      return match; 
+      return match;
     }
-    
+
     // 检查路径是否为绝对路径
     if (!path.isAbsolute(imagePath)) {
       return match;
     }
 
     const buffer = fs.readFileSync(imagePath);
-    return `${h.image(buffer, 'image/png')}`; 
+    return `${h.image(buffer, 'image/png')}`;
   });
 
   return result;

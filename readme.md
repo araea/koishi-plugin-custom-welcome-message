@@ -34,7 +34,7 @@
 这个插件提供了以下几个指令：
 
 - `cwm`：查看 customWelcomeMessage 帮助。
-- `cwm.add <guildId:string> <message:text>`：添加欢迎消息。支持多个 guildId 的输入，只要用逗号隔开就行了。
+- `cwm.add <guildId:string> <message:text>`：添加欢迎消息。支持多个 guildId 的输入，只要用逗号(中/英文逗号都支持)隔开就行了。
 - `cwm.view <guildId:string>`：查看欢迎消息。
 - `cwm.clear <guildId:string>`：一键清理欢迎消息。
 
