@@ -116,7 +116,7 @@ function registerAllKoishiCommands(ctx: Context) {
   ctx.command('cwm.add <guildId:string> <message:text>', '添加 msg')
     .action(async ({ session }, guildId: string, message: string) => {
       if (!guildId || !message) {
-        return
+        return await session.execute(`cwm.add -h`)
       }
       // 用英文逗号或中文逗号分隔 guildId 字符串，并修剪所有空白
       let guildIds = guildId.split(/[,，]\s*/);
@@ -135,7 +135,7 @@ function registerAllKoishiCommands(ctx: Context) {
   ctx.command('cwm.view <guildId:string>', '查看 msg')
     .action(async ({ session }, guildId: string) => {
       if (!guildId) {
-        return
+        return await session.execute(`cwm.view -h`)
       }
       const result = await getTableContentByGuildId(ctx, guildId)
       const isExist = checkGuildExistence(result)
@@ -162,7 +162,7 @@ function registerAllKoishiCommands(ctx: Context) {
   ctx.command('cwm.clear <guildId:string>', '清理 msg')
     .action(async ({ session }, guildId: string) => {
       if (!guildId) {
-        return
+        return await session.execute(`cwm.clear -h`)
       }
       const result = getTableContentByGuildId(ctx, guildId)
       const isExist = checkGuildExistence(result)
