@@ -6,7 +6,7 @@ import path from 'path';
 export const name = 'custom-welcome-message'
 export const usage = `## 🎮 使用
 
-- 这是一个自定义欢迎消息插件,有以下两种使用方法:
+- 这是一个自定义欢迎消息插件,有以下两种使用方法：
 
   - 直接在数据表 \`custom_welcome_table\` 中插入 \`message\` 字段。
 
@@ -19,20 +19,19 @@ export const usage = `## 🎮 使用
 
 - \`cwm\`：查看 customWelcomeMessage 插件帮助。
 
-- \`cwm.add <eventName> <guildId> <message>\`：添加欢迎/离开 消息。
+- \`cwm.add <eventName> <guildId> <message>\`：添加 欢迎/离开 消息。
 
   - \`eventName\` 为 "进群" 或 "退群"。
 
-  - \`guildId\` 为群组 ID，多个 ID 用英文逗号或中文逗号分割。
+  - \`guildId\` 为群组 ID,多个 ID 用英文逗号或中文逗号分割。
 
-  - \`message\` 为欢迎/离开消息文本。
+  - \`message\` 为 欢迎/离开 消息文本。
 
-- \`cwm.view <eventName> <guildId>\`：查看指定服务器的欢迎/离开消息。
+- \`cwm.view <eventName> <guildId>\`：查看指定群组的 欢迎/离开 消息。
 
-- \`cwm.clear <eventName> <guildId>\`：清空指定服务器的欢迎/离开消息。
+- \`cwm.clear <eventName> <guildId>\`：清空指定群组的 欢迎/离开 消息。
 
 - 小提示：以上所有命令中的 \`guildId\` 都可以使用多个用英文逗号或中文逗号分割。
-
 
 ## 🔮 变量
 
@@ -65,22 +64,32 @@ export const usage = `## 🎮 使用
 
 还可以在消息中使用图片 URL 或本地图片：
 
-- \`《图片url为http://或https://...》\`：图片URL
+- \`《图片url为http://或https://...》\`：图片 URL
 
 - \`《本地图片路径为/path/to/image》\`：本地图片路径
+  
+例如：
+
+- \`《图片url为https://i.imgur.com/abc.jpg》\`
+
+- \`《本地图片路径为C:\\Users\\114514\\Pictures\\Nawyjx.jpg》\` - (Windows)
+
+- \`《本地图片路径为home\\akisa\\koishi\\data\\suchat\\image\\1.jpeg》\` - (Linux)
 
 
 ## 🎲 示例
 
 欢迎消息示例：
 
-- \`欢迎《艾特被欢迎者》加入《当前群组名字》！\` 
+- \`欢迎《艾特被欢迎者》加入《当前群组名字》!\` 
 
-- \`《被欢迎者头像》《换行》Hi, 《被欢迎者名字》！《换行》欢迎加入《当前群组名字》！\`
+- \`《被欢迎者头像》《换行》Hi，《被欢迎者名字》!《换行》欢迎加入《当前群组名字》!\`
+
+- \`《被欢迎者头像》《换行》Hi, 《被欢迎者名字》！《换行》Welcome to 《当前群组名字》！\`
 
 离开消息示例：
 
-- \`《艾特退群者》离开了《当前群组名字》，挥一挥手说再见吧！\``
+- \`《艾特退群者》离开了《当前群组名字》，挥一挥手说再见吧!\``
 
 export interface Config { }
 
