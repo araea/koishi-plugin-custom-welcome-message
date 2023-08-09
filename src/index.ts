@@ -31,6 +31,8 @@ export const usage = `## 🎮 使用
 
 - \`cwm.clear <eventName> <guildId>\`：清空指定群组的 欢迎/离开 消息。
 
+  - \`cwm.clear -f\`：强制清空所有消息，慎用！（建议为该选项设置使用权限）
+
 - 小提示：以上所有命令中的 \`guildId\` 都可以使用多个用英文逗号或中文逗号分割。
 
 ## 🔮 变量
@@ -142,7 +144,8 @@ function registerAllKoishiCommands(ctx: Context) {
   const msg = {
     added: `添加成功！`,
     cleared: `清理成功！`,
-    invalidEvent: `无效的事件名。请使用'进群'或'退群'。`,
+    invalidEvent: `无效的事件名，请使用'进群'或'退群'！`,
+    clearedForce: `已强制清空所有消息！`
   }
 
   // cwm
@@ -150,7 +153,7 @@ function registerAllKoishiCommands(ctx: Context) {
     .action(({ session }) => {
       session.execute(`cwm -h`)
     })
-  //add
+  // add
   ctx.command('cwm.add <eventName:string> <guildId:string> <message:text>', '添加 msg')
     .action(async ({ session }, eventName: string, guildId: string, message: string) => {
       if (!eventName || !guildId || !message) {
@@ -194,7 +197,7 @@ function registerAllKoishiCommands(ctx: Context) {
         if (!isExist) {
           await session.send(`群组 ID：${id}\n暂无可用消息。`)
           continue
-        } 
+        }
         // 定义一个空字符串变量list，用来保存格式化后的内容
         let list: string = `群组 ID：${id}\n`;
 
@@ -215,7 +218,12 @@ function registerAllKoishiCommands(ctx: Context) {
     })
   // clear
   ctx.command('cwm.clear <eventName:string> <guildId:string>', '清理 msg')
-    .action(async ({ session }, eventName: string, guildId: string) => {
+    .option('force', '-f 强制全清')
+    .action(async ({ options, session }, eventName: string, guildId: string) => {
+      if (options.force) {
+        await ctx.model.remove(Custom_Welcome_TABLE_ID, {})
+        return msg.clearedForce
+      }
       if (!eventName || !guildId) {
         return await session.execute(`cwm.clear -h`)
       }

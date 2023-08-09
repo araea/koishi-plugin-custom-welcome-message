@@ -48,6 +48,8 @@
 - `cwm.view <eventName> <guildId>`：查看指定群组的 欢迎/离开 消息。
 
 - `cwm.clear <eventName> <guildId>`：清空指定群组的 欢迎/离开 消息。
+  
+  - `cwm.clear -f`：强制清空所有消息，慎用！（建议为该选项设置使用权限）
 
 - 小提示：以上所有命令中的 `guildId` 都可以使用多个用英文逗号或中文逗号分割。
 
