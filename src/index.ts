@@ -6,7 +6,7 @@ import path from 'path';
 export const name = 'custom-welcome-message'
 export const usage = `## 🎮 使用
 
-- 这是一个自定义欢迎消息插件,有以下两种使用方法：
+- 这是一个自定义 欢迎/离开 消息插件,有以下两种使用方法：
 
   - 直接在数据表 \`custom_welcome_table\` 中插入 \`message\` 字段。
 
@@ -23,7 +23,7 @@ export const usage = `## 🎮 使用
 
   - \`eventName\` 为 "进群" 或 "退群"。
 
-  - \`guildId\` 为群组 ID,多个 ID 用英文逗号或中文逗号分割。
+  - \`guildId\` 为群组 ID，多个 ID 用英文逗号或中文逗号分割。使用 \`~\` 默认指代当前群组 ID。
 
   - \`message\` 为 欢迎/离开 消息文本。
 
@@ -33,7 +33,7 @@ export const usage = `## 🎮 使用
 
   - \`cwm.clear -f\`：强制清空所有消息，慎用！（建议为该选项设置使用权限）
 
-- 小提示：以上所有命令中的 \`guildId\` 都可以使用多个用英文逗号或中文逗号分割。
+- 小提示：以上所有命令中的 \`guildId\` 都可以使用多个用英文逗号或中文逗号分割，也都可以使用 \`~\` 默认指代当前群组 ID。
 
 ## 🔮 变量
 
@@ -62,7 +62,7 @@ export const usage = `## 🎮 使用
 - \`《换行》\`：换行符
 
 
-## 🎨 图片
+### 🎨 图片
 
 还可以在消息中使用图片 URL 或本地图片：
 
@@ -79,7 +79,7 @@ export const usage = `## 🎮 使用
 - \`《本地图片路径为home/akisa/koishi/data/suchat/image/1.jpeg》\` - (Linux)
 
 
-## 🎲 示例
+### 🎲 示例
 
 欢迎消息示例：
 
@@ -166,6 +166,9 @@ function registerAllKoishiCommands(ctx: Context) {
       let guildIds = guildId.split(/[,，]\s*/);
       // 在 guildId 数组中循环
       for (let id of guildIds) {
+        if (id === '~') {
+          id = session.guildId
+        }
         // 添加一个判断条件，如果 id 不是一个有效的数字，就跳过这个循环
         if (isNaN(Number(id))) {
           continue
@@ -188,6 +191,9 @@ function registerAllKoishiCommands(ctx: Context) {
       let guildIds = guildId.split(/[,，]\s*/);
       // 在 guildId 数组中循环
       for (let id of guildIds) {
+        if (id === '~') {
+          id = session.guildId
+        }
         // 添加一个判断条件，如果 id 不是一个有效的数字，就跳过这个循环
         if (isNaN(Number(id))) {
           continue
@@ -234,6 +240,9 @@ function registerAllKoishiCommands(ctx: Context) {
       let guildIds = guildId.split(/[,，]\s*/);
       // 在 guildId 数组中循环
       for (let id of guildIds) {
+        if (id === '~') {
+          id = session.guildId
+        }
         // 添加一个判断条件，如果 id 不是一个有效的数字，就跳过这个循环
         if (isNaN(Number(id))) {
           continue
