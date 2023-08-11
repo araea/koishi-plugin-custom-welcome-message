@@ -1,9 +1,10 @@
-import { Channel, Context, Schema, Session, User, h } from 'koishi'
+import { Channel, Context, Schema, Session, User, h, Logger } from 'koishi'
 // 导入fs模块，用于读取文件
 import fs from 'fs';
 import path from 'path';
 
 export const name = 'custom-welcome-message'
+export const logger = new Logger('customWelcomeMessage')
 export const usage = `## 🎮 使用
 
 - 这是一个自定义 欢迎/离开 消息插件,有以下两种使用方法：
@@ -59,6 +60,8 @@ export const usage = `## 🎮 使用
 
 - \`《退群者头像》\`：离开者 头像(退群)
 
+- \`《一言》\`：随机一言
+
 - \`《换行》\`：换行符
 
 
@@ -66,7 +69,7 @@ export const usage = `## 🎮 使用
 
 还可以在消息中使用图片 URL 或本地图片：
 
-- \`《图片url为http://或https://...》\`：图片 URL
+- \`《图片url为http://或https://...》\`：图片 URL（可以是图片的 API 链接）
 
 - \`《本地图片路径为/path/to/image》\`：本地图片路径
   
@@ -357,6 +360,8 @@ async function replacer(session: any, match: string) {
       return await session.guildId; // 使用 await 关键字
     case '《当前群组名字》':
       return (await session.bot.getGuild(session.guildId)).guildName;
+    case '《一言》':
+      return await retryWithHitokoto(() => requestHitokoto());
     default:
       return match;
   }
@@ -400,7 +405,7 @@ function replaceImagePath(str) {
 
 async function regexReplace(ctx: Context, session: Session<keyof User.Prelude, keyof Channel.Prelude>, result: any[]) {
   // 定义一个正则表达式，匹配所有需要替换的内容
-  let regex = /《艾特被欢迎者》|《被欢迎者ID》|《被欢迎者名字》|《被欢迎者头像》|《当前群组ID》|《当前群组名字》|《艾特退群者》|《退群者ID》|《退群者名字》|《退群者头像》/g;
+  let regex = /《艾特被欢迎者》|《被欢迎者ID》|《被欢迎者名字》|《被欢迎者头像》|《当前群组ID》|《当前群组名字》|《艾特退群者》|《退群者ID》|《退群者名字》|《退群者头像》|《一言》/g;
 
   // 假设msg是一个数组
   let msg = result[Math.floor(Math.random() * result.length)].message;
@@ -435,4 +440,53 @@ async function regexReplace(ctx: Context, session: Session<keyof User.Prelude, k
   newMsg = replaceImage(newMsg)
   newMsg = replaceImagePath(newMsg)
   return newMsg
+}
+
+// 定义一个辅助函数来重试具有指数回退的函数
+async function retryWithHitokoto<T>(
+  func: () => Promise<T>,
+  retries = 3,
+): Promise<T> {
+  for (let i = 0; i < retries; i++) {
+    try {
+      return await func();
+    } catch (error) {
+      // 显示提示词
+      await showTip();
+      // 如果重试次数达到上限，抛出错误
+      if (i === retries - 1) {
+        throw error;
+      }
+    }
+  }
+}
+
+// 定义一个函数，用于请求一言的 api
+async function requestHitokoto() {
+  // 使用fetch方法来发送请求
+  const response = await fetch('https://v1.hitokoto.cn/');
+  // 判断响应是否成功
+  if (response.ok) {
+    // 解析响应为json格式
+    const data = await response.json();
+    // 返回一言的内容
+    return data.hitokoto;
+  } else {
+    // 抛出错误信息
+    throw new Error(`请求失败，状态码：${response.status}`);
+  }
+}
+
+// 定义一个函数，用于显示提示词
+async function showTip() {
+  try {
+    // 调用 requestHitokoto 函数来获取一言
+    const hitokoto = await retryWithHitokoto(() => requestHitokoto());
+
+    // 记录提示
+    logger.error(hitokoto);
+  } catch (error) {
+    // 记录错误
+    logger.error(error.message);
+  }
 }
