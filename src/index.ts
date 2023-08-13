@@ -60,6 +60,8 @@ export const usage = `## 🎮 使用
 
 - \`《退群者头像》\`：离开者 头像(退群)
 
+- \`《当前时间》\`：获取 进群/退群 事件发生时的时间（格式为：2023/8/13 16:08:46）
+
 - \`《一言》\`：随机一言
 
 - \`《换行》\`：换行符
@@ -362,6 +364,8 @@ async function replacer(session: any, match: string) {
       return (await session.bot.getGuild(session.guildId)).guildName;
     case '《一言》':
       return await retryWithHitokoto(() => requestHitokoto());
+    case '《当前时间》':
+      return getCurrentTime();
     default:
       return match;
   }
@@ -405,7 +409,7 @@ function replaceImagePath(str) {
 
 async function regexReplace(ctx: Context, session: Session<keyof User.Prelude, keyof Channel.Prelude>, result: any[]) {
   // 定义一个正则表达式，匹配所有需要替换的内容
-  let regex = /《艾特被欢迎者》|《被欢迎者ID》|《被欢迎者名字》|《被欢迎者头像》|《当前群组ID》|《当前群组名字》|《艾特退群者》|《退群者ID》|《退群者名字》|《退群者头像》|《一言》/g;
+  let regex = /《艾特被欢迎者》|《被欢迎者ID》|《被欢迎者名字》|《被欢迎者头像》|《当前群组ID》|《当前群组名字》|《艾特退群者》|《退群者ID》|《退群者名字》|《退群者头像》|《一言》|《当前时间》/g;
 
   // 假设msg是一个数组
   let msg = result[Math.floor(Math.random() * result.length)].message;
@@ -490,3 +494,8 @@ async function showTip() {
     logger.error(error.message);
   }
 }
+
+const getCurrentTime = (): string => {
+  const now = new Date();
+  return now.toLocaleString(); // 将日期转换为可读字符串
+};
