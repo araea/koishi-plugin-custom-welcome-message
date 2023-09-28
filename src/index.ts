@@ -337,6 +337,7 @@ export function apply(ctx: Context, config: Config) {
           session.send(msg.invalidEvent);
         }
       });
+
   }
 
   function registerEventEmitter(ctx: Context) {
@@ -414,7 +415,7 @@ export function apply(ctx: Context, config: Config) {
       case '《当前群组ID》':
         return await session.guildId; // 使用 await 关键字
       case '《当前群组名字》':
-        return (await session.bot.getGuild(session.guildId)).guildName;
+        return await session.guildName;
       case '《一言》':
         return await retryWithHitokoto(() => requestHitokoto());
       case '《当前时间》':
