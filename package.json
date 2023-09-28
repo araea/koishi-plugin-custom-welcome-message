@@ -1,7 +1,7 @@
 {
   "name": "koishi-plugin-custom-welcome-message",
   "description": "自定义群组的 欢迎/离开 消息，用占位符显示成员和群组信息，例如《艾特被欢迎者》。",
-  "version": "1.1.5",
+  "version": "1.1.6",
   "main": "lib/index.js",
   "typings": "lib/index.d.ts",
   "files": [

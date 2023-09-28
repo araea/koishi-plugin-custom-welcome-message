@@ -388,7 +388,7 @@ export function apply(ctx: Context, config: Config) {
   }
 
   // 定义一个异步函数，根据匹配的内容返回不同的变量
-  async function replacer(session: any, match: string) {
+  async function replacer(session, match: string) {
     switch (match) {
       // 进群
       case '《艾特被欢迎者》':
@@ -460,7 +460,7 @@ export function apply(ctx: Context, config: Config) {
   }
 
 
-  async function regexReplace(ctx: Context, session: Session<keyof User.Prelude, keyof Channel.Prelude>, result: any[]) {
+  async function regexReplace(ctx: Context, session, result: any[]) {
     // 定义一个正则表达式，匹配所有需要替换的内容
     let regex = /《艾特被欢迎者》|《被欢迎者ID》|《被欢迎者名字》|《被欢迎者头像》|《当前群组ID》|《当前群组名字》|《艾特退群者》|《退群者ID》|《退群者名字》|《退群者头像》|《一言》|《当前时间》/g;
 
